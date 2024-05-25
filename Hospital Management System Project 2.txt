@@ -1,0 +1,239 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+
+class Patient {
+    private String name;
+    private int age;
+    private String gender;
+    private String condition;
+
+    public Patient(String name, int age, String gender, String condition) {
+        this.name = name;
+        this.age = age;
+        this.gender = gender;
+        this.condition = condition;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+}
+
+class Doctor {
+    private String name;
+    private String specialization;
+
+    public Doctor(String name, String specialization) {
+        this.name = name;
+        this.specialization = specialization;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
+    }
+}
+
+class Hospital {
+    private ArrayList<Doctor> doctors;
+    private ArrayList<Patient> patients;
+
+    public Hospital() {
+        doctors = new ArrayList<>();
+        patients = new ArrayList<>();
+    }
+
+    public void addDoctor(Doctor doctor) {
+        doctors.add(doctor);
+    }
+
+    public void addPatient(Patient patient) {
+        patients.add(patient);
+    }
+
+    public ArrayList<Doctor> getDoctors() {
+        return doctors;
+    }
+
+    public ArrayList<Patient> getPatients() {
+        return patients;
+    }
+}
+
+class User {
+    private String username;
+    private String password;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+}
+
+public class HospitalManagementSystem {
+    private static Hospital hospital = new Hospital();
+    private static HashMap<String, User> users = new HashMap<>();
+    private static User loggedInUser = null;
+
+    public static void main(String[] args) {
+        hospital.addDoctor(new Doctor("Dr. Sahan Bhuiyan", "Cardiology"));
+        hospital.addDoctor(new Doctor("Dr. Abdullah Sahan", "Neurology"));
+
+        hospital.addPatient(new Patient("Noor Hossain", 65, "Male", "Heart Disease"));
+        hospital.addPatient(new Patient("Amir", 38, "Male", "High pressure"));
+        hospital.addPatient(new Patient("Sahana Akter", 50, "Female", "Migraine"));
+
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("\n1. Sign Up");
+            System.out.println("\n2. Log In");
+            System.out.println("\n4. View Doctors");
+            System.out.println("\n5. View Patients");
+            System.out.println("\n3. Log Out");
+            System.out.println("\n6. Exit");
+            System.out.print("Select an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1:
+                    signUp(scanner);
+                    break;
+                case 2:
+                    logIn(scanner);
+                    break;
+                case 3:
+                    logOut();
+                    break;
+                case 4:
+                    viewDoctors();
+                    break;
+                case 5:
+                    viewPatients();
+                    break;
+                case 6:
+                    System.out.println("Exiting system...");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private static void signUp(Scanner scanner) {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        if (users.containsKey(username)) {
+            System.out.println("Username already exists. Please try a different username.");
+        } else {
+            users.put(username, new User(username, password));
+            System.out.println("Sign-up successful. You can now log in.");
+        }
+    }
+
+    private static void logIn(Scanner scanner) {
+        if (loggedInUser != null) {
+            System.out.println("Already logged in as " + loggedInUser.getUsername());
+            return;
+        }
+
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        User user = users.get(username);
+        if (user != null && user.getPassword().equals(password)) {
+            loggedInUser = user;
+            System.out.println("Log-in successful. Welcome, " + username + "!");
+        } else {
+            System.out.println("Invalid username or password. Please try again.");
+        }
+    }
+
+    private static void logOut() {
+        if (loggedInUser == null) {
+            System.out.println("No user is currently logged in.");
+        } else {
+            System.out.println("Logging out " + loggedInUser.getUsername() + "...");
+            loggedInUser = null;
+        }
+    }
+
+    private static void viewDoctors() {
+        if (loggedInUser == null) {
+            System.out.println("You must be logged in to view doctors.");
+            return;
+        }
+
+        System.out.println("\nDoctors:");
+        for (Doctor doctor : hospital.getDoctors()) {
+            System.out.println("Name: " + doctor.getName() + ", Specialization: " + doctor.getSpecialization());
+        }
+    }
+
+    private static void viewPatients() {
+        if (loggedInUser == null) {
+            System.out.println("You must be logged in to view patients.");
+            return;
+        }
+
+        System.out.println("\nPatients:");
+        for (Patient patient : hospital.getPatients()) {
+            System.out.println("Name: " + patient.getName() + ", Age: " + patient.getAge() + ", Gender: " +
+                    patient.getGender() + ", Condition: " + patient.getCondition());
+        }
+    }
+}
